@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tonton Video YouTube</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .video-player {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .video-player iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            border-radius: 5px;
+        }
+
+        .input-area {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #c9302c;
+        }
+
+        #chatContainer {
+            margin-top: 20px;
+        }
+
+        .note {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tonton Video atau Live YouTube</h1>
+
+        <div class="input-area">
+            <label for="youtubeLink">Masukkan Link YouTube:</label>
+            <input type="text" id="youtubeLink" placeholder="Contoh: https://www.youtube.com/watch?v=dQw4w9WgXcQ atau https://www.youtube.com/live/jfKfPfyJRdk?feature=share">
+            <button onclick="loadYouTubeVideo()">Tonton</button>
+        </div>
+
+        <div id="videoContainer"></div>
+        <div id="chatContainer"></div>
+        <div class="note">
+            Jika kolom chat tidak muncul atau tidak bisa diketik, pastikan Anda login ke akun Google dan menggunakan koneksi HTTPS.
+        </div>
+    </div>
+
+    <script>
+        function loadYouTubeVideo() {
+            const youtubeLinkInput = document.getElementById("youtubeLink");
+            const videoContainer = document.getElementById("videoContainer");
+            const chatContainer = document.getElementById("chatContainer");
+            const youtubeLink = youtubeLinkInput.value;
+
+            if (youtubeLink) {
+                let videoId = '';
+                const liveRegex = /youtube\.com\/live\/([a-zA-Z0-9_-]+)/i;
+                const watchRegex = /youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/i;
+                const embedRegex = /youtu\.be\/([a-zA-Z0-9_-]+)/i;
+
+                let match = youtubeLink.match(liveRegex);
+                const isLive = !!match;
+                if (match && match[1]) {
+                    videoId = match[1];
+                } else {
+                    match = youtubeLink.match(watchRegex);
+                    if (match && match[1]) {
+                        videoId = match[1];
+                    } else {
+                        match = youtubeLink.match(embedRegex);
+                        if (match && match[1]) {
+                            videoId = match[1];
+                        } else {
+                            alert("Link YouTube tidak valid.");
+                            return;
+                        }
+                    }
+                }
+
+                const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                videoContainer.innerHTML = `
+                    <div class="video-player">
+                        <iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                `;
+
+                if (isLive) {
+                    const chatUrl = `https://www.youtube.com/live_chat?v=${videoId}&embed_domain=${location.hostname}`;
+                    chatContainer.innerHTML = `
+                        <div class="video-player" style="height: 500px;">
+                            <iframe src="${chatUrl}" style="width:100%; height:100%; border:0;" allowfullscreen></iframe>
+                        </div>
+                    `;
+                } else {
+                    chatContainer.innerHTML = "";
+                }
+            } else {
+                alert("Silakan masukkan link YouTube.");
+            }
+        }
+    </script>
+</body>
+</html>
